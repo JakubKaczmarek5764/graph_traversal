@@ -1,6 +1,7 @@
 import copy
 from collections import deque
-
+def DFS(initial, goal, order):
+    pass
 
 def BFS(initial, goal, order):
 
