@@ -1,13 +1,33 @@
 import copy
 from collections import deque
-def DFS(initial, goal, order):
-    pass
 
-def BFS(initial, goal, order):
 
-    G = Graph(initial, goal, order)
-    initial = G.board
 
+def A_star(G, initial, heuristic):
+
+def DFS(G, initial):
+    initial = Board(initial, z=find_zero(initial))
+    print(initial)
+    if G.isgood(initial):
+        return initial
+    S = deque()
+    T = set()
+    T.add(None)
+    S.append(initial)
+    while S:
+        v = S.pop()
+        if v not in T:
+            if G.isgood(v):
+                return v
+            T.add(v)
+            for n in reversed(G.neighbors(v)):
+                if n not in T:
+                    S.append(n)
+    return None
+
+
+def BFS(G, initial):
+    initial = Board(initial, z=find_zero(initial))
     if G.isgood(initial):
         return initial
     Q = deque()
@@ -25,14 +45,16 @@ def BFS(initial, goal, order):
                 U.add(n)
     return None
 
+def find_zero(board): # przyjmuje zwyklego boarda
+    for row in range(len(board)):
+        for col in range(len(board)):
+            if board[row][col] == 0:
+                return dict({"row": row, "col": col})
 class Graph:
-    def __init__(self, board, goal, order="LRUD"):
-
-        self.goal = Board(goal, {})
-
-        self.z = self.find_zero(board)
+    def __init__(self, goal, order="LRUD"):
+        self.goal = Board(goal)
         self.function_order = []
-        self.board = Board(board, self.z)
+
         function_order_dict = {
             "L": self.L,
             "R": self.R,
@@ -46,11 +68,7 @@ class Graph:
     def neighbors(self, board):
         return [f(board) for f in self.function_order]
 
-    def find_zero(self, board):
-        for row in range(len(board)):
-            for col in range(len(board)):
-                if board[row][col] == 0:
-                    return {"row":row, "col":col}
+
     def L(self, board):
         tmpBoard = Board(copy.deepcopy(board.b), {"row": board.z["row"], "col": board.z["col"]}, copy.deepcopy(board.path))
         return tmpBoard.L()
@@ -69,33 +87,32 @@ class Board:
         self.b = b
         self.z = z
         self.path = path
-    #appendy LR i UD sa na zmiane bo dzieki temu board przechowuje sciezke w druga strone
     def L(self):
         if self.z["col"] != 0:
             self.b[self.z["row"]][self.z["col"]], self.b[self.z["row"]][self.z["col"] - 1] = self.b[self.z["row"]][self.z["col"] - 1], self.b[self.z["row"]][self.z["col"]]
             self.z["col"] -= 1
-            self.path.append("R")
+            self.path.append("L")
             return self
     def R(self):
         if self.z["col"] != len(self.b) - 1:
             self.b[self.z["row"]][self.z["col"]], self.b[self.z["row"]][self.z["col"] + 1] = self.b[self.z["row"]][
                 self.z["col"] + 1], self.b[self.z["row"]][self.z["col"]]
             self.z["col"] += 1
-            self.path.append("L")
+            self.path.append("R")
             return self
     def U(self):
         if self.z["row"] != 0:
             self.b[self.z["row"]][self.z["col"]], self.b[self.z["row"] - 1][self.z["col"]] = self.b[self.z["row"] - 1][
                 self.z["col"]], self.b[self.z["row"]][self.z["col"]]
             self.z["row"] -= 1
-            self.path.append("D")
+            self.path.append("U")
             return self
     def D(self):
         if self.z["row"] != len(self.b) - 1:
             self.b[self.z["row"]][self.z["col"]], self.b[self.z["row"] + 1][self.z["col"]] = self.b[self.z["row"] + 1][
                 self.z["col"]], self.b[self.z["row"]][self.z["col"]]
             self.z["row"] += 1
-            self.path.append("U")
+            self.path.append("D")
             return self
     def __eq__(self, other):
         return self.b == other.b

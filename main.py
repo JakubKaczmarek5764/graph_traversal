@@ -8,7 +8,7 @@ def readfile(name):
     f.close()
     return tmpArr
 
-b1 = readfile(r"puzzle/4x4_14_00001.txt")
+b1 = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [0, 13, 14, 15]]
 b2 = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
 
 # graph = classes.Graph(b1, None)
@@ -16,7 +16,12 @@ b2 = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
 # print(graph.neighbors(graph.board))
 # for b in graph.neighbors(graph.board):
 #     print(b)
-solved = classes.BFS(b2,b1, "LRUD")
+G = classes.Graph(b2, "LRUD")
+solved = classes.BFS(G, b1)
+if solved:
+    print("SUCCESS")
+    print(solved.path)
+solved = classes.DFS(G, b1)
 if solved:
     print("SUCCESS")
     print(solved.path)
