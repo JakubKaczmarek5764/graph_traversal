@@ -4,15 +4,13 @@ from collections import deque
 
 
 def A_star(G, initial, heuristic):
-
+    pass
 def DFS(G, initial):
     initial = Board(initial, z=find_zero(initial))
-    print(initial)
     if G.isgood(initial):
         return initial
     S = deque()
     T = set()
-    T.add(None)
     S.append(initial)
     while S:
         v = S.pop()
@@ -34,7 +32,6 @@ def BFS(G, initial):
     U = set()
     Q.append(initial)
     U.add(initial)
-    U.add(None) # bardzo pomocne, poniewaz G.neighbors zwraca None
     while Q:
         v = Q.popleft()
         for n in G.neighbors(v):
@@ -66,7 +63,12 @@ class Graph:
     def isgood(self, board):
         return self.goal == board
     def neighbors(self, board):
-        return [f(board) for f in self.function_order]
+        tmpArr = []
+        for f in self.function_order:
+            neighbor = f(board)
+            if neighbor: tmpArr.append(neighbor)
+        return tmpArr
+       # return [f(board) for f in self.function_order] # nie bylo mi dane tak ladnie napisac smuti
 
 
     def L(self, board):
