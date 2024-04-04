@@ -2,6 +2,9 @@ import copy
 import heapq
 from collections import deque
 
+# stany przetworzone sa na liscie stanow zamknietych
+# odwiedzone to jest dlugosc listy stanow zamknietych + dlugosc listy stanow otwartych na koniec dzialania programu
+# w przypadku dfsa algorytm moze nie znalezc rozwiazania, ignorujemy tylko rozwiazanie i dlugosc rozwiazania w wykresach, reszte informacji uwzgledniamy
 
 def A_star(G, initial, heuristic):
     initial = Board(initial, z=find_zero(initial))
@@ -12,14 +15,15 @@ def A_star(G, initial, heuristic):
     chosen_metric = heuristic_func_dict[heuristic]
     P = []
     T = set()
-
+    max_depth = 0
     heapq.heappush(P, (0, 0, initial))
     count = 0 # zrobiony na potrzeby heapq, zeby bylo po czym sortowac jezeli priority jest rowne
     while P:
         v = heapq.heappop(P)[2]
+        max_depth = max(max_depth, v.depth)
         if v not in T:
             if G.isgood(v):
-                return track_solution(v)
+                return (track_solution(v), len(P) + len(T), len(P), max_depth)
             T.add(v)
             for n in G.neighbors(v):
                 if n not in T:
