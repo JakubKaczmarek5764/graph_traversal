@@ -4,8 +4,7 @@ from collections import deque
 
 
 # stany przetworzone sa na liscie stanow zamknietych
-# odwiedzone to jest dlugosc listy stanow zamknietych + dlugosc listy stanow otwartych na koniec dzialania programu
-# w przypadku dfsa algorytm moze nie znalezc rozwiazania, ignorujemy tylko rozwiazanie i dlugosc rozwiazania w wykresach, reszte informacji uwzgledniamy
+# odwiedzone to dlugosc listy stanow zamknietych + dlugosc listy stanow otwartych na koniec dzialania programu
 
 def A_star(G, initial, heuristic):
     initial = Board(initial, z=find_zero(initial))
@@ -61,21 +60,21 @@ def BFS(G, initial):
     if G.isgood(initial):
         return [track_solution(initial), 0, 0, 0]
     max_depth = 0
-    open_states = deque() # to chyba bardziej uncovered niz open ale nie wiem
-    closed_states = set()
+    open_states = deque()
+    processed_states = set()
     open_states.append(initial)
-    closed_states.add(initial)
+    processed_states.add(initial)
     while open_states:
-        v = open_states.popleft()
+        current_node = open_states.popleft()
 
-        for n in G.neighbors(v):
-            max_depth = max(max_depth, n.depth)
-            if n not in closed_states:
-                if G.isgood(n):
-                    return [track_solution(n), len(open_states) + len(closed_states), len(closed_states), max_depth]
-                open_states.append(n)
-                closed_states.add(n)
-    return [-1, len(open_states) + len(closed_states), len(closed_states), max_depth]
+        for neighbors in G.neighbors(current_node):
+            max_depth = max(max_depth, neighbors.depth)
+            if neighbors not in processed_states:
+                if G.isgood(neighbors):
+                    return [track_solution(neighbors), len(open_states) + len(processed_states), len(processed_states), max_depth]
+                open_states.append(neighbors)
+                processed_states.add(neighbors)
+    return [-1, len(open_states) + len(processed_states), len(processed_states), max_depth]
 
 
 def track_solution(board):  # przyjmuje obiekt Board
@@ -117,7 +116,6 @@ class Graph:
             if neighbor: tmpArr.append(neighbor)
         return tmpArr
 
-    # return [f(board) for f in self.function_order] # nie bylo mi dane tak ladnie napisac
 
     def hamming_metric(self, board):
         val = 0
@@ -183,8 +181,7 @@ class Board:
         return tmpStr
 
     def __hash__(self):
-        return (tuple(x) for x in
-                      self.b).__hash__()
+        return (tuple(x) for x in self.b).__hash__()
 
 
 def swap(board, i1, i2):

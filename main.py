@@ -2,14 +2,17 @@ import classes
 import sys
 from timeit import default_timer as timer
 
+
 def readfile(name):
     tmpArr = []
     f = open(name, 'r')
-    (rows, cols) = f.readline().split(" ") # liczba wierszy i kolumn
+    (rows, cols) = f.readline().split(" ")  # liczba wierszy i kolumn
     for line in f:
         tmpArr.append([int(x) for x in line[:-1].split(" ")])
     f.close()
     return ((rows, cols), tmpArr)
+
+
 def savefile(solution, solution_file, stats, stats_file):
     f = open(solution_file, 'w')
     for line in solution:
@@ -19,6 +22,7 @@ def savefile(solution, solution_file, stats, stats_file):
     for line in stats:
         f2.write(str(line) + "\n")
     f2.close()
+
 
 algo_dict = {
     "bfs": classes.BFS,
@@ -38,7 +42,7 @@ def main():
 
     # generowanie docelowego stanu ukladanki
     goal = [
-        [i*int(size[1])+j+1 for j in range(int(size[1]))] for i in range(int(size[0]))
+        [i * int(size[1]) + j + 1 for j in range(int(size[1]))] for i in range(int(size[0]))
     ]
     goal[-1][-1] = 0
 
@@ -47,7 +51,7 @@ def main():
         start = timer()
         output = algorithm(G, board, order_heuristic)
         end = timer()
-    else: # algorytmy slepe
+    else:  # algorytmy slepe
         G = classes.Graph(goal, order_heuristic)
         start = timer()
         output = algorithm(G, board)
@@ -57,21 +61,4 @@ def main():
     savefile(solution, solution_file, [len(output[0]) if output[0] != -1 else -1] + output[1:], stats_file)
 
 
-#main()
-
-
-
-
-
-
-# b2 = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]
-# b1 = readfile("4x4_03_00008.txt")[1]
-#
-# G = classes.Graph(b2)
-# start = timer()
-#
-# output = classes.A_star(G, b1, "manh")
-#
-# end = timer()
-# print(round(end - start, 3))
-
+main()
